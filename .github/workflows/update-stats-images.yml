@@ -1,0 +1,48 @@
+name: Update GitHub Stats Images
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 毎日0時 (UTC)
+  workflow_dispatch:       # 手動実行も可能
+
+permissions:
+  contents: write
+
+jobs:
+  update-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download stats images
+        run: |
+          mkdir -p images
+          echo "📥 Downloading GitHub Stats images..."
+          curl -sL "https://github-readme-stats-knsn92.vercel.app/api?theme=tokyonight&show_icons=true&username=KNSN92" \
+            -o images/github-stats.svg
+          curl -sL "https://github-readme-stats-knsn92.vercel.app/api/top-langs/?theme=tokyonight&layout=compact&username=KNSN92" \
+            -o images/top-langs.svg
+          echo "✅ Downloaded:"
+          ls -lh images/
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ No changes detected — images are up to date."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "🔄 Changes detected!"
+            git diff --stat
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/
+          git commit -m "Update GitHub stats images [automated]"
+          git push
