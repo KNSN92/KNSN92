@@ -29,13 +29,14 @@ jobs:
       - name: Check for changes
         id: check
         run: |
-          if git diff --quiet; then
+          # git status --porcelain で新規ファイル(??)も変更(M)も検知
+          if [ -z "$(git status --porcelain images/)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "ℹ️ No changes detected — images are up to date."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "🔄 Changes detected!"
-            git diff --stat
+            git status --porcelain images/
           fi
 
       - name: Commit and push if changed
