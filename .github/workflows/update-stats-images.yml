@@ -19,7 +19,7 @@ jobs:
         run: |
           mkdir -p images
           echo "📥 Downloading GitHub Stats images..."
-          curl -sL https://github-stats-extended.vercel.app/api?theme=tokyonight&show_icons=true&username=KNSN92" \
+          curl -sL "https://github-stats-extended.vercel.app/api?theme=tokyonight&show_icons=true&username=KNSN92" \
             -o images/github-stats.svg
           curl -sL "https://github-stats-extended.vercel.app/api/top-langs/?theme=tokyonight&layout=compact&username=KNSN92" \
             -o images/top-langs.svg
